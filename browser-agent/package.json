@@ -1,0 +1,26 @@
+{
+  "name": "kling-browser-agent",
+  "version": "1.0.0",
+  "description": "Browser automation agent for Kling AI with Ralph loop + Claude Code",
+  "type": "module",
+  "scripts": {
+    "agent": "npx tsx src/agent.ts",
+    "kling": "npx tsx src/kling-navigator.ts",
+    "prices": "npx tsx src/price-tracker.ts",
+    "dashboard": "npx serve dashboard -p 3000",
+    "ralph": "./ralph-cc.sh",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@browserbasehq/stagehand": "^2.5.0",
+    "playwright": "^1.50.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0",
+    "serve": "^14.2.0"
+  }
+}
