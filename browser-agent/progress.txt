@@ -1,0 +1,38 @@
+# Browser Agent Progress Log
+
+## Codebase Patterns
+- Use Stagehand act() for single DOM actions (click, type, scroll)
+- Use Stagehand extract() with zod schema for structured data extraction
+- Use agent.execute() for multi-step autonomous tasks
+- Always log actions to logs/ directory with timestamps
+- Check prd.json for next incomplete task (passes: false)
+- Commit after each completed story
+
+## Project Structure
+```
+browser-agent/
+├── src/
+│   ├── agent.ts          # Core browser agent
+│   ├── logger.ts         # Observability logging
+│   ├── kling-navigator.ts # Kling AI specific navigation
+│   ├── price-tracker.ts  # Price extraction and tracking
+│   └── video-generator.ts # Video generation workflow
+├── logs/
+│   ├── iterations.jsonl  # Ralph iteration logs
+│   ├── actions.jsonl     # Browser action logs
+│   └── prices.jsonl      # Price tracking data
+├── dashboard/
+│   └── index.html        # Observability dashboard
+├── ralph-cc.sh           # Ralph loop (uses Claude Code)
+├── prompt-cc.md          # Prompt for each iteration
+├── prd.json              # Task queue
+└── progress.txt          # This file - learnings
+```
+
+## Key URLs
+- Kling AI: https://klingai.com
+- Kling AI App: https://app.klingai.com
+- Pricing: https://klingai.com/membership/membership-plan
+
+---
+
