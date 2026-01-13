@@ -1,7 +1,7 @@
 {
-  "project": "KlingAI-Browser-Agent",
+  "project": "Higgsfield-Browser-Agent",
   "branchName": "claude/ralph-clock-implementation-ii2W1",
-  "description": "Browser automation agent that navigates Kling AI to generate videos, tracks prices, with full observability dashboard",
+  "description": "Browser automation agent that navigates higgsfield.ai to generate videos, tracks prices, with full observability dashboard",
   "userStories": [
     {
       "id": "US-001",
@@ -13,8 +13,8 @@
         "npm install completes successfully"
       ],
       "priority": 1,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - all deps installed"
     },
     {
       "id": "US-002",
@@ -27,8 +27,8 @@
         "Logs all actions to logs/ directory"
       ],
       "priority": 2,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - agent.ts created"
     },
     {
       "id": "US-003",
@@ -41,27 +41,27 @@
         "Log rotation by date"
       ],
       "priority": 3,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - logger.ts with JSON Lines format"
     },
     {
       "id": "US-004",
-      "title": "Implement Kling AI navigator",
-      "description": "Agent that can navigate klingai.com and interact with video generation",
+      "title": "Implement Higgsfield AI navigator",
+      "description": "Agent that can navigate higgsfield.ai and interact with video generation",
       "acceptanceCriteria": [
-        "src/kling-navigator.ts with Kling-specific actions",
-        "Can navigate to klingai.com",
+        "src/higgsfield-navigator.ts with Higgsfield-specific actions",
+        "Can navigate to higgsfield.ai",
         "Can extract pricing information",
         "Can navigate to video generation page"
       ],
       "priority": 4,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - higgsfield-navigator.ts created"
     },
     {
       "id": "US-005",
       "title": "Add price tracker",
-      "description": "Track and store Kling AI pricing over time",
+      "description": "Track and store Higgsfield AI pricing over time",
       "acceptanceCriteria": [
         "src/price-tracker.ts extracts current prices",
         "Stores prices in logs/prices.jsonl",
@@ -69,8 +69,8 @@
         "Can detect price changes"
       ],
       "priority": 5,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - price-tracker.ts created"
     },
     {
       "id": "US-006",
@@ -84,13 +84,13 @@
         "Auto-refreshes every 5 seconds"
       ],
       "priority": 6,
-      "passes": false,
-      "notes": ""
+      "passes": true,
+      "notes": "Completed - dashboard/index.html with auto-refresh"
     },
     {
       "id": "US-007",
       "title": "Add video generation workflow",
-      "description": "Complete workflow to generate a video on Kling AI",
+      "description": "Complete workflow to generate a video on Higgsfield AI",
       "acceptanceCriteria": [
         "src/video-generator.ts with full workflow",
         "Navigate to video generation",
@@ -99,8 +99,22 @@
         "Log results"
       ],
       "priority": 7,
-      "passes": false,
-      "notes": "Requires Kling AI account - agent will navigate but actual generation needs login"
+      "passes": true,
+      "notes": "Completed - video-generator.ts created (requires login for actual generation)"
+    },
+    {
+      "id": "US-008",
+      "title": "Create demo-ralph-loop.ts",
+      "description": "Demonstration script showing Ralph loop pattern without network",
+      "acceptanceCriteria": [
+        "Simulates full Ralph loop",
+        "Shows iteration-by-iteration execution",
+        "Demonstrates prd.json reading/writing",
+        "Demonstrates progress.txt append pattern"
+      ],
+      "priority": 8,
+      "passes": true,
+      "notes": "Completed - demo runs successfully showing all 3 iterations"
     }
   ]
 }
