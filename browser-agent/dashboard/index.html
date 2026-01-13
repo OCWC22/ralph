@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browser Agent Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'SF Mono', 'Consolas', monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+      padding: 20px;
+      min-height: 100vh;
+    }
+    h1 {
+      color: #58a6ff;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+    h2 {
+      color: #8b949e;
+      font-size: 14px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .card-full {
+      grid-column: 1 / -1;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .stat {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 32px;
+      font-weight: bold;
+      color: #58a6ff;
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #8b949e;
+      margin-top: 4px;
+    }
+    .log-list {
+      max-height: 300px;
+      overflow-y: auto;
+      font-size: 12px;
+    }
+    .log-entry {
+      padding: 8px;
+      border-bottom: 1px solid #21262d;
+      display: flex;
+      gap: 12px;
+    }
+    .log-entry:hover {
+      background: #21262d;
+    }
+    .log-time {
+      color: #8b949e;
+      flex-shrink: 0;
+      width: 80px;
+    }
+    .log-action {
+      color: #79c0ff;
+      flex-shrink: 0;
+      width: 100px;
+    }
+    .log-target {
+      color: #c9d1d9;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .log-status {
+      flex-shrink: 0;
+      width: 20px;
+    }
+    .log-status.success { color: #3fb950; }
+    .log-status.error { color: #f85149; }
+    .log-duration {
+      color: #8b949e;
+      flex-shrink: 0;
+      width: 60px;
+      text-align: right;
+    }
+    .iteration {
+      padding: 12px;
+      border-bottom: 1px solid #21262d;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .iteration-num {
+      background: #21262d;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+    .iteration-status {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+    .iteration-status.started { background: #1f6feb; }
+    .iteration-status.completed_task { background: #238636; }
+    .iteration-status.complete { background: #a371f7; }
+    .iteration-status.error { background: #da3633; }
+    .price-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .price-table th,
+    .price-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #21262d;
+    }
+    .price-table th {
+      color: #8b949e;
+      font-weight: normal;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .price-value {
+      color: #3fb950;
+      font-weight: bold;
+    }
+    .refresh-info {
+      text-align: right;
+      font-size: 11px;
+      color: #484f58;
+      margin-top: 8px;
+    }
+    .empty-state {
+      color: #484f58;
+      text-align: center;
+      padding: 40px;
+    }
+    #error-banner {
+      display: none;
+      background: #da363322;
+      border: 1px solid #da3633;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      color: #f85149;
+    }
+  </style>
+</head>
+<body>
+  <h1>Browser Agent Dashboard</h1>
+
+  <div id="error-banner"></div>
+
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value" id="total-iterations">0</div>
+      <div class="stat-label">Ralph Iterations</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="total-actions">0</div>
+      <div class="stat-label">Browser Actions</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="success-rate">--%</div>
+      <div class="stat-label">Success Rate</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" id="price-entries">0</div>
+      <div class="stat-label">Price Entries</div>
+    </div>
+  </div>
+
+  <div class="dashboard">
+    <div class="card">
+      <h2>Ralph Iterations</h2>
+      <div class="log-list" id="iterations-list">
+        <div class="empty-state">No iterations yet. Run ./ralph-cc.sh to start.</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Browser Actions</h2>
+      <div class="log-list" id="actions-list">
+        <div class="empty-state">No actions yet.</div>
+      </div>
+    </div>
+
+    <div class="card card-full">
+      <h2>Price Tracking</h2>
+      <table class="price-table">
+        <thead>
+          <tr>
+            <th>Plan</th>
+            <th>Price</th>
+            <th>Credits</th>
+            <th>Last Updated</th>
+          </tr>
+        </thead>
+        <tbody id="prices-table">
+          <tr>
+            <td colspan="4" class="empty-state">No price data yet. Run: npx tsx src/price-tracker.ts</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card card-full">
+      <h2>Agent Logs</h2>
+      <div class="log-list" id="agent-logs">
+        <div class="empty-state">No agent logs yet.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="refresh-info">
+    Auto-refreshes every 5 seconds | Last update: <span id="last-update">--</span>
+  </div>
+
+  <script>
+    const LOG_BASE = '../logs';
+
+    async function fetchJsonl(filename) {
+      try {
+        const response = await fetch(`${LOG_BASE}/${filename}`);
+        if (!response.ok) return [];
+        const text = await response.text();
+        return text.trim().split('\n').filter(Boolean).map(line => {
+          try { return JSON.parse(line); }
+          catch { return null; }
+        }).filter(Boolean);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function formatTime(timestamp) {
+      if (!timestamp) return '--';
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString();
+    }
+
+    function renderIterations(iterations) {
+      const container = document.getElementById('iterations-list');
+      document.getElementById('total-iterations').textContent = iterations.length;
+
+      if (iterations.length === 0) {
+        container.innerHTML = '<div class="empty-state">No iterations yet. Run ./ralph-cc.sh to start.</div>';
+        return;
+      }
+
+      container.innerHTML = iterations.slice(-20).reverse().map(iter => `
+        <div class="iteration">
+          <span class="iteration-num">#${iter.iteration}</span>
+          <span class="iteration-status ${iter.status}">${iter.status}</span>
+          <span style="flex: 1; color: #8b949e;">${formatTime(iter.timestamp)}</span>
+        </div>
+      `).join('');
+    }
+
+    function renderActions(actions) {
+      const container = document.getElementById('actions-list');
+      document.getElementById('total-actions').textContent = actions.length;
+
+      const successCount = actions.filter(a => a.success).length;
+      const rate = actions.length > 0 ? Math.round(successCount / actions.length * 100) : 0;
+      document.getElementById('success-rate').textContent = `${rate}%`;
+
+      if (actions.length === 0) {
+        container.innerHTML = '<div class="empty-state">No actions yet.</div>';
+        return;
+      }
+
+      container.innerHTML = actions.slice(-50).reverse().map(action => `
+        <div class="log-entry">
+          <span class="log-time">${formatTime(action.timestamp)}</span>
+          <span class="log-action">${action.action_type}</span>
+          <span class="log-target" title="${action.target || ''}">${action.target || '-'}</span>
+          <span class="log-status ${action.success ? 'success' : 'error'}">${action.success ? '✓' : '✗'}</span>
+          <span class="log-duration">${action.duration_ms}ms</span>
+        </div>
+      `).join('');
+    }
+
+    function renderPrices(prices) {
+      const container = document.getElementById('prices-table');
+      document.getElementById('price-entries').textContent = prices.length;
+
+      if (prices.length === 0) {
+        container.innerHTML = '<tr><td colspan="4" class="empty-state">No price data yet.</td></tr>';
+        return;
+      }
+
+      // Get latest price for each plan
+      const byPlan = new Map();
+      for (const p of prices) {
+        byPlan.set(p.plan, p);
+      }
+
+      container.innerHTML = Array.from(byPlan.values()).map(price => `
+        <tr>
+          <td>${price.plan}</td>
+          <td class="price-value">${price.price}</td>
+          <td>${price.credits}</td>
+          <td style="color: #8b949e;">${formatTime(price.timestamp)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAgentLogs(logs) {
+      const container = document.getElementById('agent-logs');
+
+      if (logs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No agent logs yet.</div>';
+        return;
+      }
+
+      container.innerHTML = logs.slice(-30).reverse().map(log => `
+        <div class="log-entry">
+          <span class="log-time">${formatTime(log.timestamp)}</span>
+          <span class="log-action" style="color: ${log.level === 'error' ? '#f85149' : '#79c0ff'}">${log.level}</span>
+          <span class="log-target">${log.action}</span>
+        </div>
+      `).join('');
+    }
+
+    async function refresh() {
+      try {
+        const [iterations, actions, prices, agentLogs] = await Promise.all([
+          fetchJsonl('iterations.jsonl'),
+          fetchJsonl('actions.jsonl'),
+          fetchJsonl('prices.jsonl'),
+          fetchJsonl('agent.jsonl')
+        ]);
+
+        renderIterations(iterations);
+        renderActions(actions);
+        renderPrices(prices);
+        renderAgentLogs(agentLogs);
+
+        document.getElementById('last-update').textContent = new Date().toLocaleTimeString();
+        document.getElementById('error-banner').style.display = 'none';
+      } catch (e) {
+        document.getElementById('error-banner').textContent = `Error loading logs: ${e.message}`;
+        document.getElementById('error-banner').style.display = 'block';
+      }
+    }
+
+    // Initial load
+    refresh();
+
+    // Auto-refresh every 5 seconds
+    setInterval(refresh, 5000);
+  </script>
+</body>
+</html>
